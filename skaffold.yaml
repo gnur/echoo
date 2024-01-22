@@ -4,7 +4,7 @@ metadata:
   name: mnrp
 build:
   artifacts:
-    - image: ghcr.io/gnur/tobab
+    - image: ghcr.io/gnur/echoo
       platforms:
         - linux/amd64
       context: .
