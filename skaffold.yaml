@@ -9,6 +9,8 @@ build:
         - linux/amd64
       context: .
       ko:
+        labels:
+          org.opencontainers.image.source: https://github.com/gnur/echoo
         dependencies:
           paths:
             - '**/*.go'
