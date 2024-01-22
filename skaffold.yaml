@@ -1,0 +1,16 @@
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
+  name: mnrp
+build:
+  artifacts:
+    - image: ghcr.io/gnur/tobab
+      platforms:
+        - linux/amd64
+      context: .
+      ko:
+        dependencies:
+          paths:
+            - '**/*.go'
+            - '**/*.html'
+            - go.*
