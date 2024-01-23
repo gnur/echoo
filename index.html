@@ -26,15 +26,28 @@
 </head>
 
 <body>
+  <section class="hero is-medium is-link">
+    <div class="hero-body">
+      <p class="title">
+        echoo!
+      </p>
+      <p class="subtitle">
+        backend visualiser
+      </p>
+    </div>
+  </section>
+
   <section class="section" id="app">
     <div class="columns">
       <div class="column" v-for="val in backends">
         <div class="box mycolor" :key="val.requests">
-          <h2>{{ val.name }}</h2>
-          <span>{{ val.requests }}</span>
+          <span class="tag is-info">{{ val.name }}</span><br>
+          <strong>Requests: </strong><span>{{ val.requests }}</span><br>
+          <span>{{ val.data.Boot }}</span><br>
         </div>
       </div>
     </div>
+    <button class="button is-warning" @click="resetBackends">reset</button>
   </section>
 </body>
 
@@ -49,11 +62,15 @@
       const backends = ref(b)
 
       function updateBackend(backend) {
-        if (backend in backends.value) {
-          backends.value[backend].requests++
+        if (backend.Name in backends.value) {
+          backends.value[backend.Name].requests++
+          backends.value[backend.Name].last = backend.Time
         } else {
-          backends.value[backend] = {
-            "name": backend,
+          backends.value[backend.Name] = {
+            "name": backend.Name,
+            "data": backend,
+            "first": backend.Time,
+            "last": backend.Time,
             "requests": 1
           }
         }
@@ -64,11 +81,16 @@
           const resp = await fetch("/api")
           const info = await resp.json()
 
-          updateBackend(info.Name)
+          updateBackend(info)
         } catch (e) {
-          updateBackend("error")
+          updateBackend({
+            Name: "error",
+          })
         }
 
+      }
+      function resetBackends() {
+        backends.value = {}
       }
 
 
@@ -76,7 +98,7 @@
 
       const message = ref('Hello vue!')
       return {
-        updateBackend, message, backends
+        resetBackends, message, backends
       }
     }
   }).mount('#app')

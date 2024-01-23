@@ -33,6 +33,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h = "unknown"
 	}
+	slog.Info("request", "name", name)
 
 	resp := response{
 		Hostname: h,
