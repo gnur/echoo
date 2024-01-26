@@ -1,0 +1,10 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: mnrp
+build:
+  artifacts:
+    - image: ghcr.io/gnur/echoo
+      platforms:
+        - linux/amd64
+        - linux/arm64
