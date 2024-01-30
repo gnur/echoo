@@ -68,9 +68,9 @@ setInterval(checkBackend, 1000);
             <USelect v-model="$colorMode.preference" :options="['system', 'light', 'dark']" />
           </ColorScheme>
         </div>
-        <div class="grid grid-cols-4 gap-3">
-          <div class="mycolor m-4 w-full p-3 rounded-lg border border-gray-200 shadow-sm" v-for="(val, index) in backends"
-            :key="val.requests">
+        <div class="grid grid-cols-4 gap-4">
+          <div class="mycolor m-2 mt-6 w-full p-2 rounded-lg border border-gray-200 shadow-sm"
+            v-for="(val, index) in backends" :key="val.requests">
             <h1 class="h-8 text-2xl font-bold">{{ val.name }}</h1>
             Requests: {{ val.requests }}<br>
             First: {{ val.first.toLocaleTimeString('nl-NL') }}<br>

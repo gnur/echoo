@@ -10,28 +10,32 @@ export default defineEventHandler(async (event) => {
   if (!rm) {
     await useStorage().setItem('name', randomName())
   }
-  
+
   let boot = await useStorage().getItem('bootTime')
   let name = await useStorage().getItem('name')
   let hostname = os.hostname()
-  return {
+
+  let msg = {
     "boot": boot,
     "name": name,
     "hostname": hostname,
     "timestamp": Date.now(),
   }
+
+  console.log("Sending message: ", msg)
+  return msg
 })
 
-let names = ['erwin', 'reinier', 'rio', 'bram', 'gerrit', 'guus', 'fabian', 'gnur', 'fullstaq', 'stekker'];
+let names = ['erwin', 'reinier', 'rio', 'gerrit', 'guus', 'fabian', 'fullstaq', 'stekker'];
 let adjectives = [
   'cool', 'fun', 'fast', 'smart', 'nice', 'great', 'ace', 'boss', 'dandy', 'divine', 'rare',
   'wonderfull', 'fantastic', 'super', 'superb', 'excellent', 'perfect', 'good', 'incredible', 'marvelous', 'outstanding',
   'pleasant', 'terrific', 'tremendous', 'wicked', 'wonderful', 'ace', 'boss', 'capital', 'champion', 'choice',
-  'dandy', 'delightful', 'divine', 'exquisite', 'fabulous', 'finest', 'first-class', 'first-rate', 'fluent',
+  'dandy', 'delightful', 'divine', 'exquisite', 'fabulous', 'finest', 'fluent',
   'greatest', 'heavenly', 'lovely', 'magnificent', 'matchless', 'optimum', 'paramount', 'peerless',
   'perfect', 'phenomenal', 'prime', 'prize', 'rad', 'rare', 'righteous',
   'splendid', 'stellar', 'striking', 'tremendous', 'ultimate', 'unreal',
-   'wicked', 'wondrous'
+  'wicked', 'wondrous', 'average', 'par', 'sufficient', 'adequate', 'mediocre',
 ];
 
 function randomName() {
