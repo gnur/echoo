@@ -3,6 +3,10 @@ kind: Config
 metadata:
   name: mnrp
 build:
+  tagPolicy:
+    sha256: {}
+    gitCommit:
+      ignoreChanges: false
   artifacts:
     - image: ghcr.io/gnur/echoo
       platforms:
