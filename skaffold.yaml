@@ -4,7 +4,6 @@ metadata:
   name: mnrp
 build:
   tagPolicy:
-    sha256: {}
     gitCommit:
       ignoreChanges: false
   artifacts:
