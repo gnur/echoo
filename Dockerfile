@@ -1,6 +1,10 @@
+FROM oven/bun AS build
+COPY . /app
+WORKDIR /app
+RUN bun install
+RUN bun run build
+
 FROM oven/bun
-COPY .output .
-USER bun
-ENV HOST 0.0.0.0
-EXPOSE 300
-ENTRYPOINT [ "bun", "run", "server/index.mjs" ]
+COPY --from=build /app/.output /app
+EXPOSE 3000
+ENTRYPOINT [ "bun", "run", "/app/server/index.mjs" ]
