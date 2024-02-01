@@ -60,6 +60,8 @@ function updateBackend(backend) {
 
 async function checkBackend() {
   if (interval.value == 0) return;
+  //set timeout immediately to ignore the time it takes to fetch
+  setTimeout(checkBackend, interval.value);
   try {
     const resp = await fetch("/api");
     const info = await resp.json();
@@ -72,7 +74,6 @@ async function checkBackend() {
       timestamp: new Date().getTime(),
     });
   }
-  if (interval.value > 0) setTimeout(checkBackend, interval.value);
 }
 function resetBackends() {
   backends.value = {};
