@@ -1,5 +1,44 @@
 <script setup>
 
+const intervals = [
+  {
+    name: 'disabled',
+    value: 0,
+  },
+  {
+    name: '100ms',
+    value: 100,
+  },
+  {
+    name: '500ms',
+    value: 500,
+  },
+  {
+    name: '1s',
+    value: 1000,
+  },
+  {
+    name: '2s',
+    value: 2000,
+  },
+  {
+    name: '5s',
+    value: 5000,
+  },
+  {
+    name: '10s',
+    value: 10000,
+  },
+]
+
+let interval = ref(intervals[3].value);
+
+watch(interval, (val, oldval) => {
+  if (oldval == 0 && val > 0) {
+    checkBackend();
+  }
+});
+
 let b = {};
 const backends = ref(b);
 
@@ -20,6 +59,7 @@ function updateBackend(backend) {
 }
 
 async function checkBackend() {
+  if (interval.value == 0) return;
   try {
     const resp = await fetch("/api");
     const info = await resp.json();
@@ -32,17 +72,20 @@ async function checkBackend() {
       timestamp: new Date().getTime(),
     });
   }
+  if (interval.value > 0) setTimeout(checkBackend, interval.value);
 }
 function resetBackends() {
   backends.value = {};
 }
 
-setInterval(checkBackend, 1000);
+onNuxtReady(() => {
+  checkBackend();
+});
 </script>
 
 <style>
 .mycolor {
-  animation: mymove 3s;
+  animation: mymove 2s;
 }
 
 @keyframes mymove {
@@ -64,8 +107,13 @@ setInterval(checkBackend, 1000);
         <div class="flex justify-between">
           <h1 class="text-4xl">echoo!</h1>
           <UButton @click="resetBackends">Reset</UButton>
+          <USelect v-model="interval" :options="intervals" option-attribute="name" size="lg">
+            <template #leading>
+              <UIcon name="i-heroicons-clock" />
+            </template>
+          </USelect>
           <ColorScheme>
-            <USelect v-model="$colorMode.preference" :options="['system', 'light', 'dark']" />
+            <USelect v-model="$colorMode.preference" :options="['system', 'light', 'dark']" size="lg" />
           </ColorScheme>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">

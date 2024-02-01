@@ -11,7 +11,7 @@ RUN yarn install \
 
 RUN yarn build
 
-FROM oven/bun
+FROM oven/bun:slim
 COPY --from=base /app/.output /app
 EXPOSE 3000
 ENTRYPOINT [ "bun", "run", "/app/server/index.mjs" ]
