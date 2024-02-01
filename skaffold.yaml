@@ -8,6 +8,7 @@ build:
       ignoreChanges: false
   artifacts:
     - image: ghcr.io/gnur/echoo
+      context: .
       platforms:
         - linux/amd64
         - linux/arm64
