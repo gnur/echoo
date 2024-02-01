@@ -1,17 +1,7 @@
-FROM node:lts as base
-ARG PORT=3000
-WORKDIR /app
-COPY . .
+FROM --platform=$BUILDPLATFORM oven/bun:slim
+LABEL org.opencontainers.image.source https://github.com/gnur/echoo
+LABEL org.opencontainers.image.description Simple echoo server to visualize pod load balancing
 
-RUN yarn install \
-  --prefer-offline \
-  --frozen-lockfile \
-  --non-interactive \
-  --production=false
-
-RUN yarn build
-
-FROM oven/bun:slim
-COPY --from=base /app/.output /app
+COPY .output /app
 EXPOSE 3000
 ENTRYPOINT [ "bun", "run", "/app/server/index.mjs" ]
