@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   return msg
 })
 
-let names = ['erwin', 'reinier', 'rio', 'gerrit', 'guus', 'fabian', 'fullstaq', 'stekker'];
+let names = ['erwin', 'reinier', 'rio', 'fabian', 'truefullstaq', 'frueligan'];
 let adjectives = [
   'cool', 'fun', 'fast', 'smart', 'nice', 'great', 'ace', 'boss', 'dandy', 'divine', 'rare',
   'wonderfull', 'fantastic', 'super', 'superb', 'excellent', 'perfect', 'good', 'incredible', 'marvelous', 'outstanding',
@@ -35,7 +35,6 @@ let adjectives = [
   'greatest', 'heavenly', 'lovely', 'magnificent', 'matchless', 'optimum', 'paramount', 'peerless',
   'perfect', 'phenomenal', 'prime', 'prize', 'rad', 'rare', 'righteous',
   'splendid', 'stellar', 'striking', 'tremendous', 'ultimate', 'unreal',
-  'wicked', 'wondrous', 'average', 'par', 'sufficient', 'adequate', 'mediocre',
 ];
 
 function randomName() {

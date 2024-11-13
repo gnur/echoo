@@ -123,7 +123,7 @@ onNuxtReady(() => {
                     </ColorScheme>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="mycolor m-2 mt-6 w-full p-2 rounded-lg border border-gray-200 shadow-sm truncate"
+                    <div class="mycolor m-2 mt-6 w-full p-4 rounded-lg border border-gray-200 shadow-sm bg-gray-800 truncate"
                         v-for="(val, index) in backends" :key="val.requests">
                         <h1 class="h-8 text-2xl font-bold">{{ val.name }}</h1>
                         Requests: {{ val.requests }}<br>
