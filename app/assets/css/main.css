@@ -179,18 +179,33 @@ dd {
   gap: var(--space-8);
   padding: var(--panel-padding);
   background: var(--color-surface-1);
-  transition: background-color var(--motion-fast);
+  position: relative;
+  isolation: isolate;
 }
 
-/* The pod that answered the latest request uses the selected-state tint. */
-.tile-current {
+/* Flash the tile each time this pod serves a request: purple for an answer,
+   pink for a failed request. It fades back to the surface tint. */
+.tile-flash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background: var(--color-accent-bg);
-  color: var(--color-accent-on-bg);
+  opacity: 0;
+  animation: tile-flash var(--motion-flash);
 }
 
-.tile-current .label,
-.tile-current .unit {
-  color: var(--color-accent-on-bg);
+.tile-error .tile-flash {
+  background: var(--color-alert-bg);
+}
+
+@keyframes tile-flash {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .tile-stale {

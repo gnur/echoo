@@ -32,7 +32,6 @@ const ERROR_KEY = '__error__'
 
 const interval = ref(1000)
 const backends = ref<Record<string, Backend>>({})
-const lastKey = ref<string | null>(null)
 const now = ref(Date.now())
 
 let pollTimer: ReturnType<typeof setTimeout> | undefined
@@ -90,7 +89,6 @@ function record(key: string, data: Partial<ApiResponse>, error = false) {
       error,
     }
   }
-  lastKey.value = key
 }
 
 function schedule() {
@@ -119,7 +117,6 @@ async function poll() {
 
 function reset() {
   backends.value = {}
-  lastKey.value = null
 }
 
 watch(interval, (val) => {
@@ -183,10 +180,12 @@ onBeforeUnmount(() => {
         :key="b.key"
         class="tile"
         :class="{
-          'tile-current': b.key === lastKey && !b.error,
+          'tile-error': b.error,
           'tile-stale': status(b) === 'stale',
         }"
       >
+        <!-- Re-keyed on every request, so the flash replays each time this pod answers. -->
+        <span :key="b.requests" class="tile-flash" aria-hidden="true" />
         <div class="tile-head">
           <h2 class="tile-name">{{ b.name }}</h2>
           <span class="tag" :class="`tag-${status(b)}`">{{ status(b) }}</span>

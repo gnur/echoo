@@ -5,7 +5,9 @@ echoo shows which backend pods answer your requests, live in the browser.
 The page polls `/api` on a fixed interval. Each backend process replies with a
 random name (for example `stellar_rio`) and its hostname. Every backend gets a
 tile with its request count, share of traffic, first and last answer, and a
-live or stale status.
+live or stale status. A tile flashes each time its pod answers.
+
+![echoo with three live pods and one stale pod after a rollout](docs/screenshot.png)
 
 ## What it's for
 
@@ -57,6 +59,13 @@ Service.
 | `/`        | The dashboard                                        |
 | `/api`     | `{ name, hostname, boot, timestamp }` for this process |
 | `/healthz` | `{ "status": "ok" }`, for liveness and readiness probes |
+
+### Configuration
+
+| Variable             | Default | Effect |
+| -------------------- | ------- | ------ |
+| `NUXT_MASK_HOSTNAME` | `true`  | Hostnames that don't look like a Kubernetes pod name (`echoo-7d9f8b6c5-x2k4p`, `echoo-0`) are reported as `localhost`, so laptop or VM names don't end up in demos and screenshots. Set to `false` to always show the real hostname, for example when running on VMs in a cross-region demo. |
+| `PORT`               | `3000`  | Port to listen on. |
 
 ## Development
 

@@ -61,11 +61,14 @@
   /* Motion */
   --motion-fast: 120ms ease-out;
   --motion-panel: 200ms ease-out;
+  /* Request flash on backend tiles: functional feedback, not decoration */
+  --motion-flash: 1s ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
     --motion-fast: 0ms linear;
     --motion-panel: 0ms linear;
+    --motion-flash: 0ms linear;
   }
 }

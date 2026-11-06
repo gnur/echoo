@@ -2,6 +2,10 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-01',
   devtools: { enabled: true },
+  runtimeConfig: {
+    // Report non-pod hostnames as "localhost". Override with NUXT_MASK_HOSTNAME=false.
+    maskHostname: true,
+  },
   css: ['~/assets/css/design-tokens.css', '~/assets/css/main.css'],
   app: {
     head: {
