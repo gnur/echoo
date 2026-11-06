@@ -1,17 +1,14 @@
 {
-  "name": "nuxt-app",
+  "name": "echoo",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build --preset node-server",
+    "build": "nuxt build --preset bun",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
+    "preview": "bun run .output/server/index.mjs",
     "postinstall": "nuxt prepare"
   },
-  "devDependencies": {
-    "@nuxt/devtools": "latest",
-    "@nuxt/ui": "^2.19.2",
-    "nuxt": "^3.14.159"
+  "dependencies": {
+    "nuxt": "^4.6.4"
   }
 }

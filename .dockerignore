@@ -1,2 +1,9 @@
 node_modules
+.nuxt
+.output
+.data
+.git
+.github
+.claude
 Dockerfile
+*.md

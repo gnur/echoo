@@ -1,7 +1,7 @@
 apiVersion: skaffold/v2beta29
 kind: Config
 metadata:
-  name: mnrp
+  name: echoo
 build:
   tagPolicy:
     gitCommit:
