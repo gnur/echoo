@@ -1,0 +1,100 @@
+# nginx in front of the echoo Service. `kubectl port-forward` to a Service
+# pins every request to a single pod; port-forwarding to nginx instead lets
+# nginx open a new connection to the echoo Service for each request, so
+# kube-proxy spreads the requests across all echoo pods.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx
+  namespace: echoo
+  labels:
+    app.kubernetes.io/name: echoo-nginx
+data:
+  default.conf: |
+    server {
+      listen 8080;
+
+      location / {
+        # No upstream keepalive: every proxied request uses a fresh connection,
+        # so the Service load balances each request instead of each connection.
+        proxy_pass http://echoo.echoo.svc.cluster.local;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 5s;
+      }
+
+      # nginx's own health check, independent of the echoo pods.
+      location = /nginx-healthz {
+        access_log off;
+        return 200 "ok\n";
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: echoo
+  labels:
+    app.kubernetes.io/name: echoo-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: echoo-nginx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: echoo-nginx
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: nginx
+          image: nginxinc/nginx-unprivileged:1.31-alpine
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /nginx-healthz
+              port: http
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: echoo
+  labels:
+    app.kubernetes.io/name: echoo-nginx
+spec:
+  selector:
+    app.kubernetes.io/name: echoo-nginx
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

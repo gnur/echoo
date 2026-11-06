@@ -34,23 +34,32 @@ Images for `linux/amd64` and `linux/arm64` are published to GHCR:
 docker run --rm -p 3000:3000 ghcr.io/gnur/echoo:latest
 ```
 
-On Kubernetes:
+### On Kubernetes
 
-```bash
-kubectl create deployment echoo --image=ghcr.io/gnur/echoo:latest --replicas=3 --port=3000
-kubectl expose deployment echoo --port=80 --target-port=3000
-kubectl port-forward service/echoo 8080:80
-```
-
-Open http://localhost:8080, then trigger a rollout in another terminal:
-
-```bash
-kubectl rollout restart deployment/echoo
-```
-
-`kubectl port-forward` to a Service pins the connection to one pod. To see
-balancing across pods, put echoo behind an Ingress, Gateway or `LoadBalancer`
+[`manifests/`](manifests) has a ready-to-use example in the `echoo` namespace:
+three echoo replicas behind a Service, and an nginx proxy in front of that
 Service.
+
+```bash
+kubectl apply -k manifests
+kubectl -n echoo rollout status deployment/echoo
+kubectl -n echoo port-forward service/nginx 8080:80
+```
+
+Open http://localhost:8080 and you'll see a tile for each of the three pods.
+Trigger a rollout in another terminal and watch the old pods go stale as the
+new ones take over:
+
+```bash
+kubectl -n echoo rollout restart deployment/echoo
+```
+
+Why the nginx proxy? `kubectl port-forward` to a Service tunnels to a single
+pod, so you'd only ever see one tile. nginx opens a new connection to the echoo
+Service for every request, so kube-proxy spreads the requests over all pods. In
+a real setup an Ingress, Gateway or `LoadBalancer` Service does the same job.
+
+Clean up with `kubectl delete -k manifests`.
 
 ### Endpoints
 
