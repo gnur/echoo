@@ -48,13 +48,29 @@ const totalRequests = computed(() =>
 )
 const errorCount = computed(() => backends.value[ERROR_KEY]?.requests ?? 0)
 
-// A pod counts as stale once it has not answered for five polling rounds
-// (at least 5s), which is what a terminated pod looks like during a rollout.
-const staleAfter = computed(() => Math.max(5000, (interval.value || 1000) * 5))
+// Pods that answered recently, used to size the stale threshold. Counting the
+// last RECENT_WINDOW answers (rather than all pods ever seen) keeps terminated
+// pods from inflating the count after a rollout.
+const RECENT_WINDOW = 50
+const recent = ref<string[]>([])
+const activePods = computed(() => Math.max(1, new Set(recent.value).size))
+
+// A pod counts as stale once it has not answered for max(5, 4 × active pods)
+// polling rounds, and at least 5s. Requests are spread at random, so a healthy
+// pod among N can miss a few in a row; with 4N rounds the chance of a false
+// "stale" stays under 2% (at most e^-4) no matter how many pods there are.
+const staleAfter = computed(() =>
+  Math.max(5000, (interval.value || 1000) * Math.max(5, 4 * activePods.value)),
+)
+
+// While paused no requests go out, so freeze the clock instead of letting every
+// pod drift into "stale".
+const pausedAt = ref<number | null>(null)
 
 function status(b: Backend): 'live' | 'stale' | 'error' {
   if (b.error) return 'error'
-  return now.value - b.lastSeen > staleAfter.value ? 'stale' : 'live'
+  const at = pausedAt.value ?? now.value
+  return at - b.lastSeen > staleAfter.value ? 'stale' : 'live'
 }
 
 const livePods = computed(
@@ -89,6 +105,10 @@ function record(key: string, data: Partial<ApiResponse>, error = false) {
       error,
     }
   }
+  if (!error) {
+    recent.value.push(key)
+    if (recent.value.length > RECENT_WINDOW) recent.value.shift()
+  }
 }
 
 function schedule() {
@@ -117,11 +137,23 @@ async function poll() {
 
 function reset() {
   backends.value = {}
+  recent.value = []
 }
 
 watch(interval, (val) => {
-  if (val > 0) poll()
-  else clearTimeout(pollTimer)
+  if (val === 0) {
+    clearTimeout(pollTimer)
+    pausedAt.value ??= Date.now()
+    return
+  }
+  if (pausedAt.value !== null) {
+    // Resume: move every pod's last answer forward by the paused time, so the
+    // pause doesn't count towards going stale.
+    const pausedFor = Date.now() - pausedAt.value
+    for (const b of Object.values(backends.value)) b.lastSeen += pausedFor
+    pausedAt.value = null
+  }
+  poll()
 })
 
 onNuxtReady(() => {

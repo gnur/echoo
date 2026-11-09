@@ -22,9 +22,12 @@ live or stale status. A tile flashes each time its pod answers.
   on each tile shows which region served the request. Take a region down and
   watch the failover.
 
-A pod counts as stale when it hasn't answered for five polling rounds (at
-least 5 seconds). That is usually a pod that was terminated or removed from the
-endpoints.
+A pod counts as stale when it hasn't answered for 4 polling rounds per active
+pod (at least 5 rounds and 5 seconds). With 3 pods at a 1s interval that's 12
+seconds, with 10 pods 40 seconds. Requests are spread at random, so a healthy
+pod can miss a few in a row; this threshold keeps false "stale" marks under
+2% whatever the number of pods. A stale pod is usually one that was terminated
+or removed from the endpoints. Pausing freezes the status.
 
 ## Run it
 
